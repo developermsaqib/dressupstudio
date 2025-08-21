@@ -2,10 +2,10 @@
 -- version 5.2.1
 -- https://www.phpmyadmin.net/
 --
--- Host: localhost:8889
--- Generation Time: Aug 21, 2025 at 10:25 AM
--- Server version: 8.0.40
--- PHP Version: 8.3.14
+-- Host: 127.0.0.1
+-- Generation Time: Aug 21, 2025 at 05:17 PM
+-- Server version: 10.4.32-MariaDB
+-- PHP Version: 8.2.12
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -28,12 +28,12 @@ SET time_zone = "+00:00";
 --
 
 CREATE TABLE `admin` (
-  `id` int NOT NULL,
-  `first name` text COLLATE utf8mb4_general_ci NOT NULL,
-  `last name` text COLLATE utf8mb4_general_ci NOT NULL,
-  `email` varchar(50) COLLATE utf8mb4_general_ci NOT NULL,
-  `password` int NOT NULL,
-  `ph.num` int NOT NULL
+  `id` int(11) NOT NULL,
+  `first name` text NOT NULL,
+  `last name` text NOT NULL,
+  `email` varchar(50) NOT NULL,
+  `password` int(11) NOT NULL,
+  `ph.num` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
@@ -43,11 +43,11 @@ CREATE TABLE `admin` (
 --
 
 CREATE TABLE `cart item` (
-  `id` int NOT NULL,
-  `customer id` int NOT NULL,
-  `add` text COLLATE utf8mb4_general_ci NOT NULL,
-  `remove` text COLLATE utf8mb4_general_ci NOT NULL,
-  `total amount` int NOT NULL
+  `id` int(11) NOT NULL,
+  `customer id` int(11) NOT NULL,
+  `add` text NOT NULL,
+  `remove` text NOT NULL,
+  `total amount` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
@@ -57,9 +57,9 @@ CREATE TABLE `cart item` (
 --
 
 CREATE TABLE `categories` (
-  `id` int NOT NULL,
-  `name` varchar(100) COLLATE utf8mb4_general_ci NOT NULL,
-  `image` varchar(255) COLLATE utf8mb4_general_ci DEFAULT NULL
+  `id` int(11) NOT NULL,
+  `name` varchar(100) NOT NULL,
+  `image` varchar(255) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
@@ -79,13 +79,13 @@ INSERT INTO `categories` (`id`, `name`, `image`) VALUES
 --
 
 CREATE TABLE `customer` (
-  `customer_id` int NOT NULL,
-  `first_name` varchar(20) COLLATE utf8mb4_general_ci DEFAULT NULL,
-  `last_name` text COLLATE utf8mb4_general_ci NOT NULL,
-  `email` varchar(50) COLLATE utf8mb4_general_ci NOT NULL,
-  `password` varchar(20) COLLATE utf8mb4_general_ci NOT NULL,
-  `ph.num` int NOT NULL,
-  `address` text COLLATE utf8mb4_general_ci NOT NULL
+  `customer_id` int(11) NOT NULL,
+  `first_name` varchar(20) DEFAULT NULL,
+  `last_name` text NOT NULL,
+  `email` varchar(50) NOT NULL,
+  `password` varchar(20) NOT NULL,
+  `ph.num` int(11) NOT NULL,
+  `address` text NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
@@ -95,14 +95,14 @@ CREATE TABLE `customer` (
 --
 
 CREATE TABLE `login` (
-  `id` int NOT NULL,
-  `firstname` varchar(100) COLLATE utf8mb4_general_ci DEFAULT NULL,
-  `lastname` varchar(100) COLLATE utf8mb4_general_ci DEFAULT NULL,
-  `email` varchar(100) COLLATE utf8mb4_general_ci DEFAULT NULL,
-  `password` varchar(255) COLLATE utf8mb4_general_ci DEFAULT NULL,
-  `role` varchar(20) COLLATE utf8mb4_general_ci DEFAULT 'customer',
-  `phone` varchar(20) COLLATE utf8mb4_general_ci DEFAULT NULL,
-  `address` text COLLATE utf8mb4_general_ci
+  `id` int(11) NOT NULL,
+  `firstname` varchar(100) DEFAULT NULL,
+  `lastname` varchar(100) DEFAULT NULL,
+  `email` varchar(100) DEFAULT NULL,
+  `password` varchar(255) DEFAULT NULL,
+  `role` varchar(20) DEFAULT 'customer',
+  `phone` varchar(20) DEFAULT NULL,
+  `address` text DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
@@ -125,7 +125,8 @@ INSERT INTO `login` (`id`, `firstname`, `lastname`, `email`, `password`, `role`,
 (64, 'Admin', 'ALKA', 'kirtngori@gmail.com', '$2y$10$PK6mPoejt5L8tlQW.JPwNOTRrhy4WbkpdN1c.5YipwdXidyQ1aRb6', 'admin', NULL, NULL),
 (65, 'jii', 'aa', 'jia@gmail.com', '$2y$10$IQvekqr.k8dICdS9USeHkO79DFSwBWIKIwkVM0z.IPEO3K5ZN9wbO', 'customer', NULL, NULL),
 (66, NULL, NULL, NULL, '$2y$10$hCW6FqKqVXVMgd6xBHu68eoh6.xL.xq1X7MmdHyjrrygbt31Jnmdq', NULL, NULL, NULL),
-(67, NULL, NULL, NULL, '$2y$10$R7vSaseN3I.qNiqvuZPqIecUySAOVbcrafZ6z202sHihhsnm.V.U2', NULL, NULL, NULL);
+(67, NULL, NULL, NULL, '$2y$10$R7vSaseN3I.qNiqvuZPqIecUySAOVbcrafZ6z202sHihhsnm.V.U2', NULL, NULL, NULL),
+(68, 'Muhammad', 'Saqib', 'contact.msaqib@gmail.com', '$2y$10$92WH9zZFqJvmkXxqLN/tquKlikxHdEB6nih8OaGEOwf5eIuIcAQB2', 'customer', NULL, NULL);
 
 -- --------------------------------------------------------
 
@@ -134,28 +135,54 @@ INSERT INTO `login` (`id`, `firstname`, `lastname`, `email`, `password`, `role`,
 --
 
 CREATE TABLE `orders` (
-  `id` int NOT NULL,
-  `user_name` varchar(100) COLLATE utf8mb4_general_ci DEFAULT NULL,
-  `user_email` varchar(100) COLLATE utf8mb4_general_ci DEFAULT NULL,
-  `address` text COLLATE utf8mb4_general_ci,
-  `city` varchar(50) COLLATE utf8mb4_general_ci DEFAULT NULL,
-  `phone` varchar(20) COLLATE utf8mb4_general_ci DEFAULT NULL,
-  `payment_method` varchar(50) COLLATE utf8mb4_general_ci DEFAULT NULL,
-  `cart_data` text COLLATE utf8mb4_general_ci,
-  `status` varchar(20) COLLATE utf8mb4_general_ci DEFAULT 'Pending',
-  `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP
+  `id` int(11) NOT NULL,
+  `user_id` int(11) NOT NULL,
+  `user_name` varchar(100) DEFAULT NULL,
+  `user_email` varchar(100) DEFAULT NULL,
+  `address` text DEFAULT NULL,
+  `city` varchar(50) DEFAULT NULL,
+  `phone` varchar(20) DEFAULT NULL,
+  `payment_method` varchar(50) DEFAULT NULL,
+  `cart_data` text DEFAULT NULL,
+  `total` int(11) NOT NULL,
+  `status` varchar(20) DEFAULT 'Pending',
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `orders`
 --
 
-INSERT INTO `orders` (`id`, `user_name`, `user_email`, `address`, `city`, `phone`, `payment_method`, `cart_data`, `status`, `created_at`) VALUES
-(1, 'ayesha', 'ayesha@gmail.com', 'RA Bazar lal kurti', 'Nowshera', '9827943678', 'JazzCash', '[{\"id\":102,\"name\":\"Baby Girl Pink Chicken Fancy Cotton Frock\",\"price\":\"Rs. 2,890\",\"image\":\"coton frock.webp\",\"quantity\":1},{\"id\":2,\"name\":\"Fusion\",\"price\":\"Rs. 3,500\",\"image\":\" perfume 3500.webp\",\"quantity\":2},{\"id\":3,\"name\":\"Bluetooth Headphones\",\"price\":\"Rs 999\",\"image\":\"bluthoth.webp\",\"quantity\":1},{\"id\":1,\"name\":\"Silver Grey Elegant Dress\",\"price\":\"Rs 2499\",\"image\":\"dress.webp\",\"quantity\":1}]', 'Delivered', '2025-07-16 13:31:13'),
-(2, 'user', 'default@gmail.com', 'igt8iyfouugvljbh ', 'jookihu', '0987085806', 'COD', '[{\"id\":102,\"name\":\"Baby Girl Pink Chicken Fancy Cotton Frock\",\"price\":\"Rs. 2,890\",\"image\":\"coton frock.webp\",\"quantity\":1}]', 'Pending', '2025-07-28 05:26:31'),
-(4, 'ww v', 'al08@gmail.com', 'RA Bazar lal kurti', 'Nowshera', '03369010524', 'COD', '[{\"id\":6,\"name\":\"Paxton Stainless Steel\",\"price\":\" Rs. 10,749\",\"image\":\"paxton stainless steel 10749.webp\",\"quantity\":1}]', 'Pending', '2025-08-20 20:39:43'),
-(5, 'Dhaneshwari', 'alkadarshan08@gmail.com', 'badrashi mor mohamhad ali quater nsr', 'Nowshera', '03369010524', 'JazzCash', '[{\"id\":3,\"name\":\"Blck floral dress\",\"price\":\"Rs. 1,592\",\"image\":\"women.webp\",\"quantity\":1}]', 'Pending', '2025-08-21 00:44:07'),
-(6, 'jii', 'jia@gmail.com', 'kajdhkhjavbf', 'naksjnxkjas', '02938520944', 'COD', '[{\"id\":5,\"name\":\"Perfume\",\"price\":\"Rs 89.99\",\"image\":\"men3900 perfume.webp\",\"quantity\":3}]', 'Pending', '2025-08-21 00:46:23');
+INSERT INTO `orders` (`id`, `user_id`, `user_name`, `user_email`, `address`, `city`, `phone`, `payment_method`, `cart_data`, `total`, `status`, `created_at`) VALUES
+(1, 0, 'ayesha', 'ayesha@gmail.com', 'RA Bazar lal kurti', 'Nowshera', '9827943678', 'JazzCash', '[{\"id\":102,\"name\":\"Baby Girl Pink Chicken Fancy Cotton Frock\",\"price\":\"Rs. 2,890\",\"image\":\"coton frock.webp\",\"quantity\":1},{\"id\":2,\"name\":\"Fusion\",\"price\":\"Rs. 3,500\",\"image\":\" perfume 3500.webp\",\"quantity\":2},{\"id\":3,\"name\":\"Bluetooth Headphones\",\"price\":\"Rs 999\",\"image\":\"bluthoth.webp\",\"quantity\":1},{\"id\":1,\"name\":\"Silver Grey Elegant Dress\",\"price\":\"Rs 2499\",\"image\":\"dress.webp\",\"quantity\":1}]', 0, 'Delivered', '2025-07-16 13:31:13'),
+(2, 0, 'user', 'default@gmail.com', 'igt8iyfouugvljbh ', 'jookihu', '0987085806', 'COD', '[{\"id\":102,\"name\":\"Baby Girl Pink Chicken Fancy Cotton Frock\",\"price\":\"Rs. 2,890\",\"image\":\"coton frock.webp\",\"quantity\":1}]', 0, 'Pending', '2025-07-28 05:26:31'),
+(4, 0, 'ww v', 'al08@gmail.com', 'RA Bazar lal kurti', 'Nowshera', '03369010524', 'COD', '[{\"id\":6,\"name\":\"Paxton Stainless Steel\",\"price\":\" Rs. 10,749\",\"image\":\"paxton stainless steel 10749.webp\",\"quantity\":1}]', 0, 'Pending', '2025-08-20 20:39:43'),
+(5, 0, 'Dhaneshwari', 'alkadarshan08@gmail.com', 'badrashi mor mohamhad ali quater nsr', 'Nowshera', '03369010524', 'JazzCash', '[{\"id\":3,\"name\":\"Blck floral dress\",\"price\":\"Rs. 1,592\",\"image\":\"women.webp\",\"quantity\":1}]', 0, 'Pending', '2025-08-21 00:44:07'),
+(6, 0, 'jii', 'jia@gmail.com', 'kajdhkhjavbf', 'naksjnxkjas', '02938520944', 'COD', '[{\"id\":5,\"name\":\"Perfume\",\"price\":\"Rs 89.99\",\"image\":\"men3900 perfume.webp\",\"quantity\":3}]', 0, 'Pending', '2025-08-21 00:46:23'),
+(7, 68, 'Muhammad', 'contact.msaqib@gmail.com', 'IJP Road Islamabad', 'Islamabad', '03178306873', 'Cash on Delivery', NULL, 10000, 'Pending', '2025-08-21 15:05:44'),
+(8, 68, 'Muhammad', 'contact.msaqib@gmail.com', 'IJP Road Islamabad', 'Islamabad', '03178306873', 'Cash on Delivery', NULL, 10000, 'Pending', '2025-08-21 15:07:12');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `order_items`
+--
+
+CREATE TABLE `order_items` (
+  `id` int(11) NOT NULL,
+  `order_id` int(11) NOT NULL,
+  `product_id` int(11) NOT NULL,
+  `product_name` varchar(255) DEFAULT NULL,
+  `price` decimal(10,2) DEFAULT NULL,
+  `quantity` int(11) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `order_items`
+--
+
+INSERT INTO `order_items` (`id`, `order_id`, `product_id`, `product_name`, `price`, `quantity`) VALUES
+(1, 8, 3, ' The Cinderella Ball Gown (Classic Princess)', 5000.00, 2);
 
 -- --------------------------------------------------------
 
@@ -164,15 +191,22 @@ INSERT INTO `orders` (`id`, `user_name`, `user_email`, `address`, `city`, `phone
 --
 
 CREATE TABLE `products` (
-  `id` int NOT NULL,
-  `name` varchar(100) COLLATE utf8mb4_general_ci NOT NULL,
-  `stock` int NOT NULL,
-  `image` varchar(255) COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `id` int(11) NOT NULL,
+  `name` varchar(100) NOT NULL,
+  `stock` int(11) NOT NULL,
+  `image` varchar(255) DEFAULT NULL,
   `price` decimal(10,2) DEFAULT NULL,
-  `description` text COLLATE utf8mb4_general_ci,
-  `category_id` int NOT NULL,
-  `subcategory_id` int DEFAULT NULL
+  `description` text DEFAULT NULL,
+  `category_id` int(11) NOT NULL,
+  `subcategory_id` int(11) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `products`
+--
+
+INSERT INTO `products` (`id`, `name`, `stock`, `image`, `price`, `description`, `category_id`, `subcategory_id`) VALUES
+(3, ' The Cinderella Ball Gown (Classic Princess)', 13, 'uploads/68a71670d7315_The Cinderella Ball Gown (Classic Princess).jpg', 5000.00, 'Description: Feel like you\'ve stepped out of a storybook in this breathtaking floor-length gown. Features a sweetheart neckline, a fitted bodice adorned with delicate shimmering sequins, and a full, layered tulle skirt.', 11, 4);
 
 -- --------------------------------------------------------
 
@@ -181,9 +215,9 @@ CREATE TABLE `products` (
 --
 
 CREATE TABLE `subcategories` (
-  `id` int NOT NULL,
-  `category_id` int NOT NULL,
-  `name` varchar(100) COLLATE utf8mb4_general_ci NOT NULL
+  `id` int(11) NOT NULL,
+  `category_id` int(11) NOT NULL,
+  `name` varchar(100) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
@@ -236,6 +270,13 @@ ALTER TABLE `orders`
   ADD PRIMARY KEY (`id`);
 
 --
+-- Indexes for table `order_items`
+--
+ALTER TABLE `order_items`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `order_id` (`order_id`);
+
+--
 -- Indexes for table `products`
 --
 ALTER TABLE `products`
@@ -258,35 +299,47 @@ ALTER TABLE `subcategories`
 -- AUTO_INCREMENT for table `categories`
 --
 ALTER TABLE `categories`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=15;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=15;
 
 --
 -- AUTO_INCREMENT for table `login`
 --
 ALTER TABLE `login`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=68;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=69;
 
 --
 -- AUTO_INCREMENT for table `orders`
 --
 ALTER TABLE `orders`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
+
+--
+-- AUTO_INCREMENT for table `order_items`
+--
+ALTER TABLE `order_items`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT for table `products`
 --
 ALTER TABLE `products`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT for table `subcategories`
 --
 ALTER TABLE `subcategories`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
 -- Constraints for dumped tables
 --
+
+--
+-- Constraints for table `order_items`
+--
+ALTER TABLE `order_items`
+  ADD CONSTRAINT `order_items_ibfk_1` FOREIGN KEY (`order_id`) REFERENCES `orders` (`id`);
 
 --
 -- Constraints for table `products`
