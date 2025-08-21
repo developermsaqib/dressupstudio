@@ -107,7 +107,13 @@ if(isset($_SESSION['user_name'])){
                     <img src="baby esstial.jpg" alt="Baby Essentials">
                     <h3><a href="baby essential.php"> Baby Essentials</a></h3>
                 </div>
-                <!-- Dynamic category cards -->
+            
+            </div>
+        </div>
+        <div class="container">
+            <h2>Categories</h2>
+            <div class="category-grid">
+            <!-- Dynamic category cards -->
                 <?php
                 $catResult = $conn->query("SELECT * FROM categories");
                 while($cat = $catResult->fetch_assoc()) {
@@ -117,7 +123,7 @@ if(isset($_SESSION['user_name'])){
                     echo '</div>';
                 }
                 ?>
-            </div>
+                </div>
         </div>
     </section>
 
