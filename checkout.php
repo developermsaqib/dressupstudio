@@ -1,115 +1,158 @@
 <?php
 session_start();
-include 'connection.php';// Database connection
+include 'connection.php';
 
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-  $name = $_POST['full_name'];
-  $email = $_POST['email'];
-  $address = $_POST['address'];
-  $city = $_POST['city'];
-  $phone = $_POST['phone'];
-  $payment = $_POST['payment_method'];
-  $cart_data = $_POST['cart_data']; // JSON string
-
-  $stmt = $conn->prepare("INSERT INTO orders (user_name, user_email, address, city, phone, payment_method, cart_data) VALUES (?, ?, ?, ?, ?, ?, ?)");
-  $stmt->bind_param("sssssss", $name, $email, $address, $city, $phone, $payment, $cart_data);
-
-  if ($stmt->execute()) {
-    echo "<script>
-      localStorage.removeItem('cart');
-      window.location.href = 'thankyou.php';
-    </script>";
+// Restrict to logged-in users
+if (!isset($_SESSION['user_id'])) {
+    header('Location: login.php?redirect=checkout.php');
     exit;
-  } else {
-    echo "Error: " . $stmt->error;
-  }
 }
 
-?>
+$cart = isset($_SESSION['cart']) ? $_SESSION['cart'] : [];
+if (empty($cart)) {
+    header('Location: cart.php');
+    exit;
+}
 
+$user = [
+    'name' => $_SESSION['user_name'] ?? '',
+    'email' => $_SESSION['user_email'] ?? ''
+];
+
+$total = 0;
+foreach ($cart as $item) {
+    $total += $item['price'] * $item['quantity'];
+}
+
+$error = isset($_GET['error']) ? $_GET['error'] : '';
+?>
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-  <meta charset="UTF-8" />
-  <title>Checkout</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
-  <link rel="stylesheet" href="checkout.css">
+    <meta charset="UTF-8">
+    <title><?php echo htmlspecialchars($product['name']); ?> - Product Details</title>
+    <link rel="stylesheet" href="index.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="admin dashboard.css">
+
 </head>
+
 <body>
+    <header>
+        <div class="container">
+            <div class="logo">
+                <h1>DressUp Studio</h1>
+            </div>
+            <nav>
+                <ul>
+                    <li><a href="index.php">Home</a></li>
+                    <li><a href="index.php#products">Products</a></li>
+                    <li><a href="index.php#features">Features</a></li>
+                    <li><a href="index.php#sale">Sale</a></li>
+                    <li><a href="index.php#testimonials">Testimonials</a></li>
+                    <li><a href="index.php#contact">Contact Us</a></li>
 
-  <div class="checkout-modal-box">
-    <span class="close-button" onclick="window.location.href='cart.php'">&times;</span>
-    <h3>Checkout</h3>
+                </ul>
+            </nav>
+            <div class="header-icons">
 
-    <form id="checkout-form" method="POST">
-      <div class="checkout-two-columns">
+                <a href="search page.html" class="fas fa-search"></a>
+                <?php
+                if (isset($_SESSION['user_name'])) {
+                    $alpha = strtoupper(substr($_SESSION['user_name'], 0, 1));
+                    echo "<div class='user-alpha' onclick=\"window.location.href='customer_dashboard.php'\">$alpha</div>";
+                } else {
+                    echo "<a href='signup.php' class='fas fa-user'></a>";
+                }
+                ?>
+                <a href="cart.php" class="fas fa-shopping-cart"></a>
+                <span id="cart-count" class="cart-count">
+                    <?php
+                    // Defensive: Only count numeric quantities and only if cart is not empty
+                    $cartQty = 0;
+                    if (isset($_SESSION['cart']) && is_array($_SESSION['cart'])) {
+                        foreach ($_SESSION['cart'] as $item) {
+                            if (isset($item['quantity']) && is_numeric($item['quantity']) && $item['quantity'] > 0) {
+                                $cartQty += (int)$item['quantity'];
+                            }
+                        }
+                    }
+                    // If cart is empty or all items removed, unset the cart session
+                    if ($cartQty === 0 && isset($_SESSION['cart'])) {
+                        unset($_SESSION['cart']);
+                    }
+                    echo $cartQty;
+                    ?>
+                </span>
 
-        <!-- LEFT: Customer Info -->
-        <div class="customer-column">
-          <h4 class="section-title">Customer Info</h4>
-          <div class="form-group">
-            <label class="form-label">Full Name</label>
-            <input type="text" name="full_name" class="form-control" value="<?php echo $_SESSION['user_name'] ?? ''; ?>" readonly>
-          </div>
+            </div>
 
-          <div class="form-group">
-            <label class="form-label">Email</label>
-            <input type="email" name="email" class="form-control" value="<?php echo $_SESSION['user_email'] ?? ''; ?>" readonly>
-          </div>
-
-          <div class="form-group">
-            <label class="form-label">Address</label>
-            <input type="text" name="address" class="form-control" required>
-          </div>
-
-          <div class="form-group">
-            <label class="form-label">City</label>
-            <input type="text" name="city" class="form-control" required>
-          </div>
-
-          <div class="form-group">
-            <label class="form-label">Phone</label>
-            <input type="tel" name="phone" class="form-control" required>
-          </div>
         </div>
-
-        <!-- RIGHT: Payment Section -->
-        <div class="payment-column">
-          <h4 class="section-title">Payment Method</h4>
-        <div class="form-group payment-options">
-  <label class="payment-btn">
-    <input type="radio" name="payment_method" value="COD" checked onclick="showPaymentInfo('')">
-    <span>Cash on Delivery</span>
-  </label>
-
-  <label class="payment-btn">
-    <input type="radio" name="payment_method" value="JazzCash" onclick="showPaymentInfo('JazzCash')">
-    <span>JazzCash</span>
-  </label>
-
-  <label class="payment-btn">
-    <input type="radio" name="payment_method" value="EasyPaisa" onclick="showPaymentInfo('EasyPaisa')">
-    <span>EasyPaisa</span>
-  </label>
-
-  <div id="payment-instructions" style="margin-top:10px; display:none; color:#ff69b4; font-weight:bold;"></div>
-</div>
-
-
-          <div id="payment-instructions" style="display:none; margin-top:10px; color:var(--primary); font-weight:bold;"></div>
+        <div class="mobile-menu">
+            <!-- <i class="fas fa-bars"></i> -->
+            cart
         </div>
+        </div>
+    </header>
 
-      </div>
-
-      <input type="hidden" name="cart_data" id="cart_data">
-      <button type="submit" class="place-order-btn">
-        <i class="fas fa-shopping-bag"></i> Place Order
-      </button>
-    </form>
-  </div>
-
-  <script src="checkout.js"></script>
-  
+    <main style="max-width: 900px; margin: 100px auto; background: #fff; padding: 30px; border-radius: 10px; box-shadow: 0 1px 3px #000;">
+        <h2 style="color: #e91e63;">Checkout</h2>
+        <?php if ($error): ?>
+            <div style="background: #ffe0e0; color: #b71c1c; padding: 10px 20px; border-radius: 5px; margin-bottom: 20px;">Please fill all required fields.</div>
+        <?php endif; ?>
+        <h3>Order Summary</h3>
+        <table style="width:100%; border-collapse:collapse; margin-bottom:20px;">
+            <tr style="background:#ffe4ec; color:#e91e63;">
+                <th>Name</th>
+                <th>Price</th>
+                <th>Quantity</th>
+                <th>Subtotal</th>
+            </tr>
+            <?php foreach ($cart as $item): ?>
+                <tr style="text-align:center;">
+                    <td><?php echo htmlspecialchars($item['name']); ?></td>
+                    <td>Rs <?php echo number_format($item['price']); ?></td>
+                    <td><?php echo $item['quantity']; ?></td>
+                    <td>Rs <?php echo number_format($item['price'] * $item['quantity']); ?></td>
+                </tr>
+            <?php endforeach; ?>
+        </table>
+        <div style="text-align:right; font-size:1.2rem; margin-bottom:20px;">
+            <b>Total: Rs <?php echo number_format($total); ?></b>
+        </div>
+        <h3>Shipping & Billing Information</h3>
+        <form action="order.php" method="POST" style="max-width: 500px; margin: 0 auto; padding: 20px;">
+            <div class="form-group">
+                <label for="name">Name:</label>
+                <input type="text" class="form-control" id="name" name="name" value="<?php echo htmlspecialchars($user['name']); ?>" required>
+            </div>
+            <div class="form-group">
+                <label for="email">Email:</label>
+                <input type="email" class="form-control" id="email" name="email" value="<?php echo htmlspecialchars($user['email']); ?>" required>
+            </div>
+            <div class="form-group">
+                <label for="address">Address:</label>
+                <input type="text" class="form-control" id="address" name="address" required>
+            </div>
+            <div class="form-group">
+                <label for="city">City:</label>
+                <input type="text" class="form-control" id="city" name="city" required>
+            </div>
+            <div class="form-group">
+                <label for="phone">Phone:</label>
+                <input type="text" class="form-control" id="phone" name="phone" required>
+            </div>
+            <div class="form-group">
+                <label for="payment_method">Payment Method:</label>
+                <select class="form-control" id="payment_method" name="payment_method" required>
+                    <option value="Cash on Delivery">Cash on Delivery</option>
+                    <option value="Card">Card</option>
+                </select>
+            </div>
+            <button type="submit" class="btn primary-btn">Place Order</button>
+        </form>
+    </main>
 </body>
+
 </html>
