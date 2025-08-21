@@ -20,8 +20,9 @@ try {
     $stock = intval($_POST['productStock'] ?? 0);
     $category_id = intval($_POST['productCategory'] ?? 0);
     $subcategory_id = intval($_POST['productSubcategory'] ?? 0);
+    $description = trim($_POST['productDescription'] ?? '');
 
-    if (!$name || !$price || !$stock || !$category_id) {
+    if (!$name || !$price || !$stock || !$category_id || !$description) {
         throw new Exception('Missing required fields');
     }
 
@@ -40,8 +41,8 @@ try {
     }
 
     // Build SQL
-    $sql = "UPDATE products SET name=?, price=?, stock=?, category_id=?, subcategory_id=?";
-    $params = [$name, $price, $stock, $category_id, $subcategory_id];
+    $sql = "UPDATE products SET name=?, price=?, stock=?, description=?, category_id=?, subcategory_id=?";
+    $params = [$name, $price, $stock, $description, $category_id, $subcategory_id];
     if ($image_path) {
         $sql .= ", image=?";
         $params[] = $image_path;

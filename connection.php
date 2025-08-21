@@ -1,7 +1,7 @@
 <?php
 $servername = "localhost";
 $username = "root";
-$password = "";
+$password = "root";
 $database = "dressupstudio";  // ✅ Make sure this is your exact DB name
 
 // Create connection

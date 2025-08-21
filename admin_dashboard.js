@@ -65,24 +65,23 @@ document.addEventListener("DOMContentLoaded", () => {
   function renderProducts() {
     if (!productTableBody) return;
     productTableBody.innerHTML = "";
-    products.forEach((p) => {
-      const row = productTableBody.insertRow();
-      row.dataset.id = p.id;
-      row.innerHTML = `
-                <td>${p.id}</td>
-                <td><img src="${p.image}" alt="${p.name}" width="50"></td>
-                <td>${p.name}</td>
-                <td>$${parseFloat(p.price).toFixed(2)}</td>
-                <td>${p.stock}</td>
-                <td>${p.category_name || ""}</td>
-                <td>
-                    <button class="btn edit-btn" data-id="${p.id}">Edit</button>
-                    <button class="btn delete-btn" data-id="${
-                      p.id
-                    }">Delete</button>
-                </td>
-            `;
-    });
+  products.forEach((p) => {
+    const row = productTableBody.insertRow();
+    row.dataset.id = p.id;
+    row.innerHTML = `
+        <td>${p.id}</td>
+        <td><img src="${p.image}" alt="${p.name}" width="50"></td>
+        <td>${p.name}</td>
+        <td>$${parseFloat(p.price).toFixed(2)}</td>
+        <td>${p.stock}</td>
+        <td>${p.description ? p.description : ""}</td>
+        <td>${p.category_name || ""}</td>
+        <td>
+          <button class="btn edit-btn" data-id="${p.id}">Edit</button>
+          <button class="btn delete-btn" data-id="${p.id}">Delete</button>
+        </td>
+      `;
+  });
   }
 
   function updateDashboard() {
@@ -239,6 +238,7 @@ document.addEventListener("DOMContentLoaded", () => {
       document.getElementById("productName").value = product.name;
       document.getElementById("productPrice").value = product.price;
       document.getElementById("productStock").value = product.stock;
+      document.getElementById("productDescription").value = product.description || "";
       // Clear file input and show image preview
       const fileInput = document.getElementById("productImage");
       if (fileInput) fileInput.value = "";

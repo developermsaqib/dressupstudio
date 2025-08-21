@@ -6,6 +6,7 @@ if (isset($_POST['addProduct'])) {
     $stock = $_POST['productStock'];
     $category_id = $_POST['productCategory'];
     $subcategory_id = isset($_POST['productSubcategory']) ? $_POST['productSubcategory'] : null;
+    $description = isset($_POST['productDescription']) ? $_POST['productDescription'] : '';
     $image = '';
     if (isset($_FILES['productImage']) && $_FILES['productImage']['error'] == 0) {
         $targetDir = 'uploads/';
@@ -18,9 +19,9 @@ if (isset($_POST['addProduct'])) {
             $image = $targetFile;
         }
     }
-    $sql = "INSERT INTO products (name, price, stock, image, category_id, subcategory_id) VALUES (?, ?, ?, ?, ?, ?)";
+    $sql = "INSERT INTO products (name, price, stock, description, image, category_id, subcategory_id) VALUES (?, ?, ?, ?, ?, ?, ?)";
     $stmt = $conn->prepare($sql);
-    $stmt->bind_param("sdisss", $name, $price, $stock, $image, $category_id, $subcategory_id);
+    $stmt->bind_param("sdissss", $name, $price, $stock, $description, $image, $category_id, $subcategory_id);
     $success = $stmt->execute();
     if ($success) {
         header('Location: admin_dashboard.php?success=1');

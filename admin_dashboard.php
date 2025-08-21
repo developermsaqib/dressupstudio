@@ -60,6 +60,7 @@ if (!isset($_SESSION['user_id']) || $_SESSION['user_role'] !== 'admin') {
                         <th>Name</th>
                         <th>Price</th>
                         <th>Stock</th>
+                        <th>Description</th>
                         <th>Category</th>
                         <th>Actions</th>
                     </tr>
@@ -166,6 +167,10 @@ if (!isset($_SESSION['user_id']) || $_SESSION['user_role'] !== 'admin') {
             <div class="form-group">
                 <label for="productStock">Stock:</label>
                 <input type="number" id="productStock" name="productStock" required>
+            </div>
+            <div class="form-group">
+                <label for="productDescription">Description:</label>
+                <input class="form-control" id="productDescription" name="productDescription" rows="4" required>
             </div>
             <div class="form-group">
                 <label for="productImage">Image:</label>
