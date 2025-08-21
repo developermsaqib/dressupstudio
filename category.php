@@ -25,6 +25,7 @@ $products = $prodResult->get_result();
 ?>
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -32,6 +33,7 @@ $products = $prodResult->get_result();
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="men.css">
 </head>
+
 <body>
     <header class="gallery-header">
         <h1><?php echo htmlspecialchars($category['name']); ?></h1>
@@ -39,20 +41,34 @@ $products = $prodResult->get_result();
     </header>
 
     <main class="gallery-container">
-        <?php while($prod = $products->fetch_assoc()): ?>
-        <div class="gallery-item">
-            <img src="<?php echo htmlspecialchars($prod['image']); ?>" alt="<?php echo htmlspecialchars($prod['name']); ?>">
-            <h2><?php echo htmlspecialchars($prod['name']); ?></h2>
-            <p><?php echo htmlspecialchars($prod['description']); ?></p>
-            <div class="price-section">
-                <span>Rs <?php echo htmlspecialchars($prod['price']); ?></span>
-                <button class="buy-btn">Add to Cart</button>
-            </div>
-        </div>
-        <?php endwhile; ?>
+        <?php if ($products->num_rows === 0): ?>
+            <p>No Products available in this category</p>
+        <?php else: ?>
+            <?php while ($prod = $products->fetch_assoc()): ?>
+                <div class="gallery-item">
+                    <img src="<?php echo htmlspecialchars($prod['image']); ?>" alt="<?php echo htmlspecialchars($prod['name']); ?>">
+                    <h2><?php echo htmlspecialchars($prod['name']); ?></h2>
+                    <p><?php echo htmlspecialchars($prod['description']); ?></p>
+                    <div class="price-section">
+                        <span>Rs <?php echo htmlspecialchars($prod['price']); ?></span>
+                        <?php if ($prod['stock'] > 0): ?>
+                            <form action="add_to_cart.php" method="POST" style="margin-top: 20px;">
+                                <input type="hidden" name="product_id" value="<?php echo $prod['id']; ?>">
+                                <label for="quantity">Quantity:</label>
+                                <input type="number" id="quantity" name="quantity" value="1" min="1" max="<?php echo $prod['stock']; ?>" style="width: 60px;">
+                                <button type="submit" style="background: #e91e63; color: #fff; border: none; padding: 8px 18px; border-radius: 4px; margin-left: 10px; cursor: pointer;">Add to Cart</button>
+                            </form>
+                        <?php else: ?>
+                            <div style="color: #b71c1c; font-weight: bold;">This product is currently out of stock.</div>
+                        <?php endif; ?>
+                    </div>
+                </div>
+            <?php endwhile; ?>
+        <?php endif; ?>
     </main>
 
     <!-- Lightbox and JS can be reused from men.php -->
     <script src="men.js"></script>
 </body>
+
 </html>

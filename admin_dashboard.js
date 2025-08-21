@@ -65,10 +65,10 @@ document.addEventListener("DOMContentLoaded", () => {
   function renderProducts() {
     if (!productTableBody) return;
     productTableBody.innerHTML = "";
-  products.forEach((p) => {
-    const row = productTableBody.insertRow();
-    row.dataset.id = p.id;
-    row.innerHTML = `
+    products.forEach((p) => {
+      const row = productTableBody.insertRow();
+      row.dataset.id = p.id;
+      row.innerHTML = `
         <td>${p.id}</td>
         <td><img src="${p.image}" alt="${p.name}" width="50"></td>
         <td>${p.name}</td>
@@ -81,7 +81,7 @@ document.addEventListener("DOMContentLoaded", () => {
           <button class="btn delete-btn" data-id="${p.id}">Delete</button>
         </td>
       `;
-  });
+    });
   }
 
   function updateDashboard() {
@@ -93,7 +93,6 @@ document.addEventListener("DOMContentLoaded", () => {
     try {
       const res = await fetch("get_categories.php");
       categories = await res.json();
-      console.log("Cat:", categories);
       renderCategories();
       populateCategoryDropdown();
     } catch (err) {
@@ -238,7 +237,8 @@ document.addEventListener("DOMContentLoaded", () => {
       document.getElementById("productName").value = product.name;
       document.getElementById("productPrice").value = product.price;
       document.getElementById("productStock").value = product.stock;
-      document.getElementById("productDescription").value = product.description || "";
+      document.getElementById("productDescription").value =
+        product.description || "";
       // Clear file input and show image preview
       const fileInput = document.getElementById("productImage");
       if (fileInput) fileInput.value = "";
@@ -386,31 +386,28 @@ document.addEventListener("DOMContentLoaded", () => {
 
       let total = 0;
 
-      // ensure cart_data is an array
-      let cartData = [];
-      if (typeof o.cart_data === "string") {
-        try {
-          cartData = JSON.parse(o.cart_data);
-        } catch (e) {
-          console.error("Invalid cart_data JSON:", o.cart_data);
+      if (o.total == 0) {
+        // ensure cart_data is an array
+        let cartData = [];
+        if (typeof o.cart_data === "string") {
+          try {
+            cartData = JSON.parse(o.cart_data);
+          } catch (e) {
+            console.error("Invalid cart_data JSON:", o.cart_data);
+          }
+        } else if (Array.isArray(o.cart_data)) {
+          cartData = o.cart_data;
         }
-      } else if (Array.isArray(o.cart_data)) {
-        cartData = o.cart_data;
-      }
 
-      if (Array.isArray(cartData)) {
-        total = cartData.reduce((sum, item) => {
-          const price = parseFloat(item.price.replace(/[^0-9.]/g, ""));
-          console.log(
-            "item:",
-            item.name,
-            "price:",
-            price,
-            "qty:",
-            item.quantity
-          );
-          return sum + price * (item.quantity || 1);
-        }, 0);
+        if (Array.isArray(cartData)) {
+          total = cartData.reduce((sum, item) => {
+            const price = parseFloat(item.price.replace(/[^0-9.]/g, ""));
+            return sum + price * (item.quantity || 1);
+          }, 0);
+        }
+      } else {
+        console.log(o.total);
+        total = parseFloat(o.total);
       }
 
       row.innerHTML = `

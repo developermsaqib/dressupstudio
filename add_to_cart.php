@@ -53,4 +53,3 @@ if (!$found) {
 
 header('Location: product.php?id=' . $product_id . '&added=1');
 exit;
-?>
