@@ -1,9 +1,15 @@
 <?php
 session_start();
 include 'connection.php';
+
+
+
+
+
 ?>
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -11,6 +17,7 @@ include 'connection.php';
     <link rel="stylesheet" href="index.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 </head>
+
 <body>
     <header>
         <div class="container">
@@ -25,48 +32,65 @@ include 'connection.php';
                     <li><a href="#sale">Sale</a></li>
                     <li><a href="#testimonials">Testimonials</a></li>
                     <li><a href="#contact">Contact Us</a></li>
-                  
+
                 </ul>
             </nav>
             <div class="header-icons">
-                
+
                 <a href="search page.html" class="fas fa-search"></a>
                 <?php
-if(isset($_SESSION['user_name'])){
-    $alpha = strtoupper(substr($_SESSION['user_name'], 0, 1));
-    echo "<div class='user-alpha' onclick=\"window.location.href='customer_dashboard.php'\">$alpha</div>";
-} else {
-    echo "<a href='signup.php' class='fas fa-user'></a>";
-}
-?>
-              <a href="cart.php" class="fas fa-shopping-cart"></a>
-             <span id="cart-count" class="cart-count">0</span>
+                if (isset($_SESSION['user_name'])) {
+                    $alpha = strtoupper(substr($_SESSION['user_name'], 0, 1));
+                    echo "<div class='user-alpha' onclick=\"window.location.href='customer_dashboard.php'\">$alpha</div>";
+                } else {
+                    echo "<a href='signup.php' class='fas fa-user'></a>";
+                }
+                ?>
+                <a href="cart.php" class="fas fa-shopping-cart"></a>
+                <span id="cart-count" class="cart-count">
+                    <?php
+                    // Defensive: Only count numeric quantities and only if cart is not empty
+                    $cartQty = 0;
+                    if (isset($_SESSION['cart']) && is_array($_SESSION['cart'])) {
+                        foreach ($_SESSION['cart'] as $item) {
+                            if (isset($item['quantity']) && is_numeric($item['quantity']) && $item['quantity'] > 0) {
+                                $cartQty += (int)$item['quantity'];
+                            }
+                        }
+                    }
+                    // If cart is empty or all items removed, unset the cart session
+                    if ($cartQty === 0 && isset($_SESSION['cart'])) {
+                        unset($_SESSION['cart']);
+                    }
+                    echo $cartQty;
+                    ?>
+                </span>
 
             </div>
-    
-            </div>
-            <div class="mobile-menu">
-                <i class="fas fa-bars"></i>
-            </div>
+
+        </div>
+        <div class="mobile-menu">
+            <i class="fas fa-bars"></i>
+        </div>
         </div>
     </header>
 
     <section class="hero" id="home">
         <div class="video-background">
-        <video autoplay muted loop playsinline>
-            <source src="Pink final.mp4" type="video/mp4">
-       
-            Your browser does not support the video tag.
-        </video>
-    </div>
+            <video autoplay muted loop playsinline>
+                <source src="Pink final.mp4" type="video/mp4">
+
+                Your browser does not support the video tag.
+            </video>
+        </div>
         <div class="container">
             <div class="hero-content">
                 <h1>One Stop Shop For All</h1>
-                <p >Your Perfect Look Start Here</p>
+                <p>Your Perfect Look Start Here</p>
                 <a href="#products" class="btn">Shop Now</a>
             </div>
-           
-</div>
+
+        </div>
         </div>
     </section>
 
@@ -107,23 +131,23 @@ if(isset($_SESSION['user_name'])){
                     <img src="baby esstial.jpg" alt="Baby Essentials">
                     <h3><a href="baby essential.php"> Baby Essentials</a></h3>
                 </div>
-            
+
             </div>
         </div>
         <div class="container">
             <h2>Categories</h2>
             <div class="category-grid">
-            <!-- Dynamic category cards -->
+                <!-- Dynamic category cards -->
                 <?php
                 $catResult = $conn->query("SELECT * FROM categories");
-                while($cat = $catResult->fetch_assoc()) {
+                while ($cat = $catResult->fetch_assoc()) {
                     echo '<div class="category-card">';
-                    echo '<img src="'.$cat['image'].'" alt="'.$cat['name'].'">';
-                    echo '<h3><a href="category.php?id='.$cat['id'].'">'.$cat['name'].'</a></h3>';
+                    echo '<img src="' . $cat['image'] . '" alt="' . $cat['name'] . '">';
+                    echo '<h3><a href="category.php?id=' . $cat['id'] . '">' . $cat['name'] . '</a></h3>';
                     echo '</div>';
                 }
                 ?>
-                </div>
+            </div>
         </div>
     </section>
 
@@ -148,19 +172,19 @@ if(isset($_SESSION['user_name'])){
                 <!-- Dynamic product cards -->
                 <?php
                 $prodResult = $conn->query("SELECT * FROM products ORDER BY id DESC LIMIT 8");
-                while($prod = $prodResult->fetch_assoc()) {
+                while ($prod = $prodResult->fetch_assoc()) {
                     echo '<div class="product-card">';
-                    echo '<img src="'.$prod['image'].'" alt="'.$prod['name'].'">';
-                    echo '<h3>'.$prod['name'].'</h3>';
-                    echo '<p>Rs '.$prod['price'].'</p>';
-                    echo '<a href="product.php?id='.$prod['id'].'" class="btn">View</a>';
+                    echo '<img src="' . $prod['image'] . '" alt="' . $prod['name'] . '">';
+                    echo '<h3>' . $prod['name'] . '</h3>';
+                    echo '<p>Rs ' . $prod['price'] . '</p>';
+                    echo '<a href="product.php?id=' . $prod['id'] . '" class="btn">View</a>';
                     echo '</div>';
                 }
                 ?>
             </div>
         </div>
     </section>
-    
+
     <section class="sale" id="sale"></section>
     <section class="banner">
         <div class="container">
@@ -224,8 +248,8 @@ if(isset($_SESSION['user_name'])){
                     </div>
                 </div>
                 <div class="slider-controls">
-                   <button class="prev"><i class="fas fa-chevron-left"></i></button>
-                    <button  class="next"><i class="fas fa-chevron-right"></i></button>
+                    <button class="prev"><i class="fas fa-chevron-left"></i></button>
+                    <button class="next"><i class="fas fa-chevron-right"></i></button>
                 </div>
             </div>
         </div>
@@ -291,5 +315,7 @@ if(isset($_SESSION['user_name'])){
 
     <script src="index.js"></script>
 </body>
+
 </html>
-</div></form>
+</div>
+</form>

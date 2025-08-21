@@ -7,13 +7,14 @@ document.addEventListener("DOMContentLoaded", function () {
 
   let cart = JSON.parse(localStorage.getItem("cart")) || [];
 
-  function saveCart() {z
+  function saveCart() {
+    z;
     localStorage.setItem("cart", JSON.stringify(cart));
   }
 
   function calculateTotals() {
     let subtotal = 0;
-    cart.forEach(item => {
+    cart.forEach((item) => {
       const price = parseFloat(item.price.replace(/[^\d.]/g, "")) || 0;
       subtotal += price * item.quantity;
     });
@@ -27,13 +28,13 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 
   function removeItem(id) {
-    cart = cart.filter(item => item.id !== id);
+    cart = cart.filter((item) => item.id !== id);
     saveCart();
     renderCart();
   }
 
   function updateQuantity(id, type) {
-    cart = cart.map(item => {
+    cart = cart.map((item) => {
       if (item.id === id) {
         const newQty = type === "inc" ? item.quantity + 1 : item.quantity - 1;
         item.quantity = newQty < 1 ? 1 : newQty;
@@ -53,7 +54,7 @@ document.addEventListener("DOMContentLoaded", function () {
       return;
     }
 
-    cart.forEach(item => {
+    cart.forEach((item) => {
       const itemDiv = document.createElement("div");
       itemDiv.className = "cart-item";
       itemDiv.innerHTML = `
