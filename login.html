@@ -159,13 +159,33 @@
 
     <script src="login.js"></script>
     <script>
-      // On login form submit, attach guest cart JSON from localStorage
-      document
-        .getElementById("loginForm")
-        .addEventListener("submit", function (e) {
-          var guestCart = localStorage.getItem("cart") || "[]";
-          document.getElementById("guestCart").value = guestCart;
-        });
+      // Handle redirect query param for post-login navigation
+      (function () {
+        function getQueryParam(name) {
+          const url = window.location.search;
+          const params = new URLSearchParams(url);
+          return params.get(name);
+        }
+        var redirect = getQueryParam("redirect");
+        if (redirect) {
+          // Store redirect in localStorage for use after login
+          localStorage.setItem("postLoginRedirect", redirect);
+        }
+      })();
+
+      // Attach guest cart to login and signup forms
+      function attachGuestCart(formId, inputId) {
+        var form = document.getElementById(formId);
+        if (form) {
+          form.addEventListener("submit", function () {
+            var guestCart = localStorage.getItem("cart") || "[]";
+            var input = document.getElementById(inputId);
+            if (input) input.value = guestCart;
+          });
+        }
+      }
+      attachGuestCart("loginForm", "guestCart");
+      attachGuestCart("signupForm", "guestCartSignup");
     </script>
   </body>
 </html>

@@ -351,6 +351,33 @@ include 'connection.php';
     </footer>
 
     <script src="index.js"></script>
+    <script>
+        // Update cart counter for guests on page load
+        (function() {
+            // Only run for guests (not logged in)
+            var isGuest = typeof window.isUserLoggedIn === 'undefined' || !window.isUserLoggedIn;
+            if (isGuest) {
+                function updateCartCount() {
+                    var cart = JSON.parse(localStorage.getItem('cart') || '[]');
+                    var total = cart.reduce(function(sum, item) {
+                        return sum + (item.quantity || 0);
+                    }, 0);
+                    var cartCountEl = document.getElementById('cart-count');
+                    if (cartCountEl) cartCountEl.textContent = total;
+                }
+                updateCartCount();
+                // Also update after addToCart
+                if (window.addToCart) {
+                    window.addToCart = (function(orig) {
+                        return function(item) {
+                            orig(item);
+                            updateCartCount();
+                        }
+                    })(window.addToCart);
+                }
+            }
+        })();
+    </script>
 </body>
 
 </html>

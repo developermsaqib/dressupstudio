@@ -4,7 +4,8 @@ include 'connection.php';
 
 // Restrict to logged-in users
 if (!isset($_SESSION['user_id'])) {
-    header('Location: login.php?redirect=checkout.php');
+    // Redirect guests to login.html with a clear message
+    header('Location: login.html?msg=Please+login+to+place+an+order');
     exit;
 }
 

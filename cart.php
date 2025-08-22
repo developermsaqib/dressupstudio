@@ -37,7 +37,7 @@ $is_logged_in = isset($_SESSION['user_id']);
                     <b>Total:</b> <span id="total">Rs 0</span>
                 </div>
                 <div style="margin-top:20px;">
-                    <a href="login.php?redirect=cart.php" style="background:#388e3c; color:#fff; padding:8px 18px; border-radius:4px; text-decoration:none;">Login to Checkout</a>
+                    <a href="login.html?redirect=cart.php" style="background:#388e3c; color:#fff; padding:8px 18px; border-radius:4px; text-decoration:none;">Login to Checkout</a>
                 </div>
             <?php else: ?>
                 <!-- Logged-in user: Show PHP cart as before -->

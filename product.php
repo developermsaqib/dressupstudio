@@ -112,18 +112,50 @@ $added = isset($_GET['added']) ? true : false;
                     </span>
                 </div>
                 <?php if ($product['stock'] > 0): ?>
-                    <form action="add_to_cart.php" method="POST" style="margin-top: 20px;">
-                        <input type="hidden" name="product_id" value="<?php echo $product['id']; ?>">
-                        <label for="quantity">Quantity:</label>
-                        <input type="number" id="quantity" name="quantity" value="1" min="1" max="<?php echo $product['stock']; ?>" style="width: 60px;">
-                        <button type="submit" style="background: #e91e63; color: #fff; border: none; padding: 8px 18px; border-radius: 4px; margin-left: 10px; cursor: pointer;">Add to Cart</button>
-                    </form>
+                    <?php if (isset($_SESSION['user_id'])): ?>
+                        <!-- Logged-in user: use PHP form -->
+                        <form action="add_to_cart.php" method="POST" style="margin-top: 20px;">
+                            <input type="hidden" name="product_id" value="<?php echo $product['id']; ?>">
+                            <label for="quantity">Quantity:</label>
+                            <input type="number" id="quantity" name="quantity" value="1" min="1" max="<?php echo $product['stock']; ?>" style="width: 60px;">
+                            <button type="submit" style="background: #e91e63; color: #fff; border: none; padding: 8px 18px; border-radius: 4px; margin-left: 10px; cursor: pointer;">Add to Cart</button>
+                        </form>
+                    <?php else: ?>
+                        <!-- Guest: use JS/localStorage -->
+                        <div style="margin-top: 20px;">
+                            <label for="guest_quantity">Quantity:</label>
+                            <input type="number" id="guest_quantity" value="1" min="1" max="<?php echo $product['stock']; ?>" style="width: 60px;">
+                            <button onclick="addToCart({id: <?php echo $product['id']; ?>, name: '<?php echo addslashes($product['name']); ?>', price: <?php echo $product['price']; ?>, image: '<?php echo addslashes($product['image']); ?>', quantity: parseInt(document.getElementById('guest_quantity').value), stock: <?php echo $product['stock']; ?>})" style="background: #e91e63; color: #fff; border: none; padding: 8px 18px; border-radius: 4px; margin-left: 10px; cursor: pointer;">Add to Cart</button>
+                        </div>
+                    <?php endif; ?>
                 <?php else: ?>
                     <div style="color: #b71c1c; font-weight: bold;">This product is currently out of stock.</div>
                 <?php endif; ?>
             </div>
         </div>
     </main>
+    <script src="cart.js" defer></script>
+    <script>
+        // Update cart counter for guests on page load
+        if (typeof window.isUserLoggedIn !== 'undefined' && !window.isUserLoggedIn) {
+            function updateCartCount() {
+                var cart = JSON.parse(localStorage.getItem('cart') || '[]');
+                var total = cart.reduce(function(sum, item) {
+                    return sum + (item.quantity || 0);
+                }, 0);
+                var cartCountEl = document.getElementById('cart-count');
+                if (cartCountEl) cartCountEl.textContent = total;
+            }
+            updateCartCount();
+            // Also update after addToCart
+            window.addToCart = (function(orig) {
+                return function(item) {
+                    orig(item);
+                    updateCartCount();
+                }
+            })(window.addToCart);
+        }
+    </script>
 </body>
 
 </html>

@@ -36,6 +36,7 @@ document.addEventListener("DOMContentLoaded", function () {
       if (!found) cart.push(item);
       saveCart();
       renderCart();
+      updateCartCount(); // <-- update counter
     } else {
       // For logged-in users, fallback to server-side add (existing logic)
       window.location.href = `add_to_cart.php?id=${item.id}&qty=${item.quantity}`;
@@ -108,6 +109,20 @@ document.addEventListener("DOMContentLoaded", function () {
     calculateTotals();
   }
 
+  function updateCartCount() {
+    let total = 0;
+    if (!isLoggedIn()) {
+      const guestCart = JSON.parse(localStorage.getItem("cart")) || [];
+      total = guestCart.reduce((sum, item) => sum + item.quantity, 0);
+    } else {
+      // For logged-in users, you may want to fetch from session or use PHP
+      // This can be handled server-side or via AJAX if needed
+      // For now, fallback to cart.length
+      total = cart.reduce((sum, item) => sum + item.quantity, 0);
+    }
+    if (cartCount) cartCount.textContent = total;
+  }
+
   window.removeItem = removeItem;
   window.updateQuantity = updateQuantity;
 
@@ -170,3 +185,33 @@ function placeOrder() {
 window.getGuestCart = function () {
   return localStorage.getItem("cart") || "[]";
 };
+
+// --- Sync guest cart to server after login ---
+window.syncGuestCartToServer = function () {
+  if (!isLoggedIn()) return;
+  const guestCart = JSON.parse(localStorage.getItem("cart") || "[]");
+  if (guestCart.length === 0) return;
+  fetch("sync_cart.php", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ cart: guestCart }),
+  })
+    .then((res) => res.json())
+    .then((data) => {
+      if (data.success) {
+        localStorage.removeItem("cart");
+      }
+    });
+};
+
+// --- Show message for guests ---
+if (!isLoggedIn()) {
+  const cartContainer = document.querySelector(".cart-container");
+  if (cartContainer) {
+    const msg = document.createElement("div");
+    msg.style =
+      "background:#fff3cd;color:#856404;padding:10px;margin-bottom:10px;border-radius:5px;";
+    msg.innerHTML = "<b>Note:</b> Your cart will be saved when you log in.";
+    cartContainer.insertBefore(msg, cartContainer.firstChild);
+  }
+}
