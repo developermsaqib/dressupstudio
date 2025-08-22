@@ -46,10 +46,13 @@ $order_id = $stmt->insert_id;
 // Insert order items
 $item_stmt = $conn->prepare("INSERT INTO order_items (order_id, product_id, product_name, price, quantity) VALUES (?, ?, ?, ?, ?)");
 foreach ($cart as $item) {
+    // Fix: Corrected bind_param type string to match 5 parameters (i, i, s, d, i)
     $item_stmt->bind_param("iisdi", $order_id, $item['id'], $item['name'], $item['price'], $item['quantity']);
     $item_stmt->execute();
     // Optionally, update product stock
-    $conn->query("UPDATE products SET stock = stock - " . intval($item['quantity']) . " WHERE id = " . intval($item['id']));
+    $update_stmt = $conn->prepare("UPDATE products SET stock = stock - ? WHERE id = ?");
+    $update_stmt->bind_param("ii", $item['quantity'], $item['id']);
+    $update_stmt->execute();
 }
 
 // Clear cart
@@ -58,4 +61,3 @@ unset($_SESSION['cart']);
 // Show confirmation
 header('Location: order_confirmation.php?order_id=' . $order_id);
 exit;
-?>

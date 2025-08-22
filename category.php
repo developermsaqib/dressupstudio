@@ -17,9 +17,21 @@ if (!$category) {
     die('Category not found!');
 }
 
-// Fetch products for this category
-$prodResult = $conn->prepare("SELECT * FROM products WHERE category_id = ?");
-$prodResult->bind_param("i", $category_id);
+// Fetch subcategories for this category
+$subcatResult = $conn->prepare("SELECT * FROM subcategories WHERE category_id = ?");
+$subcatResult->bind_param("i", $category_id);
+$subcatResult->execute();
+$subcategories = $subcatResult->get_result();
+
+// Fetch products for this category (optionally filter by subcategory)
+$selected_subcat = isset($_GET['subcat']) ? intval($_GET['subcat']) : 0;
+if ($selected_subcat > 0) {
+    $prodResult = $conn->prepare("SELECT * FROM products WHERE category_id = ? AND subcategory_id = ?");
+    $prodResult->bind_param("ii", $category_id, $selected_subcat);
+} else {
+    $prodResult = $conn->prepare("SELECT * FROM products WHERE category_id = ?");
+    $prodResult->bind_param("i", $category_id);
+}
 $prodResult->execute();
 $products = $prodResult->get_result();
 ?>
@@ -37,12 +49,22 @@ $products = $prodResult->get_result();
 <body>
     <header class="gallery-header">
         <h1><?php echo htmlspecialchars($category['name']); ?></h1>
-        <!-- Optional: Dynamic filter controls based on product types -->
     </header>
 
     <main class="gallery-container">
+        <?php if ($subcategories->num_rows > 0): ?>
+            <div class="subcategories-list">
+                <h2>Subcategories</h2>
+                <?php while ($subcat = $subcategories->fetch_assoc()): ?>
+                    <a href="category.php?id=<?php echo $category_id; ?>&subcat=<?php echo $subcat['id']; ?>" style="margin-right: 15px;<?php if ($selected_subcat == $subcat['id']) echo ' font-weight:bold;'; ?>">
+                        <?php echo htmlspecialchars($subcat['name']); ?>
+                    </a>
+                <?php endwhile; ?>
+            </div>
+        <?php endif; ?>
+
         <?php if ($products->num_rows === 0): ?>
-            <p>No Products available in this category</p>
+            <p>No Products available in this category<?php echo $selected_subcat ? ' and subcategory' : ''; ?></p>
         <?php else: ?>
             <?php while ($prod = $products->fetch_assoc()): ?>
                 <div class="gallery-item">
@@ -66,8 +88,6 @@ $products = $prodResult->get_result();
             <?php endwhile; ?>
         <?php endif; ?>
     </main>
-
-    <!-- Lightbox and JS can be reused from men.php -->
     <script src="men.js"></script>
 </body>
 
