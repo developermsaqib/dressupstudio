@@ -37,7 +37,41 @@ include 'connection.php';
             </nav>
             <div class="header-icons">
 
-                <a href="search page.html" class="fas fa-search"></a>
+                <!-- Search icon triggers dropdown search form -->
+                <div class="search-dropdown" style="display:inline-block;position:relative;">
+                    <a href="#" class="fas fa-search" id="search-icon"></a>
+                    <form id="header-search-form" method="get" action="search.php" style="display:none;position:absolute;top:30px;right:0;z-index:1000;background:#fff;padding:10px;border-radius:6px;box-shadow:0 2px 8px rgba(0,0,0,0.15);min-width:220px;">
+                        <input type="text" name="q" placeholder="Search..." style="width:140px;padding:5px;">
+                        <button type="submit" style="padding:5px 10px;">Go</button>
+                        <span style="cursor:pointer;margin-left:8px;color:#e91e63;font-weight:bold;" id="close-search">&times;</span>
+                    </form>
+                </div>
+                <script>
+                    // Toggle search form on icon click
+                    document.addEventListener('DOMContentLoaded', function() {
+                        var icon = document.getElementById('search-icon');
+                        var form = document.getElementById('header-search-form');
+                        var close = document.getElementById('close-search');
+                        if (icon && form && close) {
+                            icon.addEventListener('click', function(e) {
+                                e.preventDefault();
+                                form.style.display = (form.style.display === 'block') ? 'none' : 'block';
+                                if (form.style.display === 'block') {
+                                    form.querySelector('input[name=q]').focus();
+                                }
+                            });
+                            close.addEventListener('click', function() {
+                                form.style.display = 'none';
+                            });
+                            // Optional: Hide on click outside
+                            document.addEventListener('mousedown', function(event) {
+                                if (form.style.display === 'block' && !form.contains(event.target) && event.target !== icon) {
+                                    form.style.display = 'none';
+                                }
+                            });
+                        }
+                    });
+                </script>
                 <?php
                 if (isset($_SESSION['user_name'])) {
                     $alpha = strtoupper(substr($_SESSION['user_name'], 0, 1));
@@ -154,7 +188,10 @@ include 'connection.php';
     <section class="featured-products" id="products">
         <div class="container">
             <h1>Products</h1>
-            <input type="text" id="productSearch" placeholder="Search products..." style="width: 100%; padding: 10px; margin-bottom: 20px;">
+            <form method="get" action="search.php" style="margin-bottom: 20px;">
+                <input type="text" name="q" id="productSearch" placeholder="Search products, categories, subcategories..." style="width: 100%; padding: 10px;">
+                <button type="submit" style="margin-top: 5px;">Search</button>
+            </form>
             <div class="product-grid">
                 <!-- Static product cards -->
                 <div class="product-card">
