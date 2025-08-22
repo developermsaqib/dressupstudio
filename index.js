@@ -71,21 +71,11 @@ document.addEventListener("DOMContentLoaded", function () {
     // updateCartCount();
   }
 
-  let allProducts = [];
-
-  // Fetch products from backend (dynamic)
-  fetch("get_products.php")
-    .then((response) => response.json())
-    .then((dynamicProducts) => {
-      allProducts = [...products, ...dynamicProducts];
-      displayProducts(allProducts);
-      localStorage.setItem("allProducts", JSON.stringify(allProducts));
-    })
-    .catch(() => {
-      allProducts = products;
-      displayProducts(products);
-      localStorage.setItem("allProducts", JSON.stringify(products));
-    });
+  // Remove dynamic products from backend
+  // Only use static products array
+  let allProducts = products;
+  displayProducts(allProducts);
+  localStorage.setItem("allProducts", JSON.stringify(allProducts));
 
   function displayProducts(productList) {
     productGrid.innerHTML = "";

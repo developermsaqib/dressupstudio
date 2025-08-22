@@ -206,18 +206,7 @@ include 'connection.php';
                     <p>Rs 2000</p>
                     <a href="#" class="btn">View</a>
                 </div>
-                <!-- Dynamic product cards -->
-                <?php
-                $prodResult = $conn->query("SELECT * FROM products ORDER BY id DESC LIMIT 8");
-                while ($prod = $prodResult->fetch_assoc()) {
-                    echo '<div class="product-card">';
-                    echo '<img src="' . $prod['image'] . '" alt="' . $prod['name'] . '">';
-                    echo '<h3>' . $prod['name'] . '</h3>';
-                    echo '<p>Rs ' . $prod['price'] . '</p>';
-                    echo '<a href="product.php?id=' . $prod['id'] . '" class="btn">View</a>';
-                    echo '</div>';
-                }
-                ?>
+
             </div>
         </div>
     </section>
