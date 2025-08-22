@@ -3,10 +3,12 @@ session_start();
 include 'connection.php';
 
 if (!isset($_SESSION['user_id'])) {
+    // --- Only allow logged-in users to place orders ---
     header('Location: login.php?redirect=checkout.php');
     exit;
 }
 
+// --- Only use DB/session cart for orders ---
 $cart = isset($_SESSION['cart']) ? $_SESSION['cart'] : [];
 if (empty($cart)) {
     header('Location: cart.php');
@@ -61,3 +63,5 @@ unset($_SESSION['cart']);
 // Show confirmation
 header('Location: order_confirmation.php?order_id=' . $order_id);
 exit;
+
+// --- Order processing uses only DB/session cart, never localStorage ---

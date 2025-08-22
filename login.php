@@ -11,6 +11,12 @@ include 'connection.php';
 // Get form values
 $email = $_POST['email'] ?? '';
 $password = $_POST['password'] ?? '';
+$guest_cart_json = $_POST['guest_cart'] ?? '';
+$guest_cart = [];
+if ($guest_cart_json) {
+    $guest_cart = json_decode($guest_cart_json, true);
+    if (!is_array($guest_cart)) $guest_cart = [];
+}
 
 // Query user by email
 $sql = "SELECT * FROM login WHERE email = ?";
@@ -30,13 +36,10 @@ if ($result->num_rows === 1) {
 
         $_SESSION['user_role'] = $user['role'];
 
-        // --- Merge guest session cart with user's cart (if any) ---
-        // If you have persistent cart storage in DB, load it here. For now, we use session only.
-        $user_cart = []; // Example: fetch from DB if you have persistent cart storage
-        if (isset($_SESSION['cart']) && is_array($_SESSION['cart'])) {
-            // If you have persistent cart storage, merge session cart into DB cart here
-            // For now, just keep session cart as the user's cart
-            foreach ($_SESSION['cart'] as $guest_item) {
+        // --- Merge guest cart from localStorage (if any) ---
+        $user_cart = isset($_SESSION['cart']) && is_array($_SESSION['cart']) ? $_SESSION['cart'] : [];
+        if (!empty($guest_cart)) {
+            foreach ($guest_cart as $guest_item) {
                 $found = false;
                 foreach ($user_cart as &$user_item) {
                     if ($user_item['id'] == $guest_item['id']) {
@@ -67,6 +70,8 @@ if ($result->num_rows === 1) {
                 header("Location: customer_dashboard.php");
                 break;
         }
+        // After login, clear guest cart in browser
+        echo "<script>localStorage.removeItem('cart');</script>";
         exit;
     } else {
         echo "<script>alert('❌ Incorrect password'); window.history.back();</script>";

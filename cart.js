@@ -7,10 +7,40 @@ document.addEventListener("DOMContentLoaded", function () {
 
   let cart = JSON.parse(localStorage.getItem("cart")) || [];
 
-  function saveCart() {
-    z;
-    localStorage.setItem("cart", JSON.stringify(cart));
+  // --- GUEST CART/LOGIN LOGIC ---
+  // Helper: Check if user is logged in (set by PHP)
+  function isLoggedIn() {
+    return window.isUserLoggedIn === true;
   }
+
+  // Save cart to localStorage for guests only
+  function saveCart() {
+    if (!isLoggedIn()) {
+      localStorage.setItem("cart", JSON.stringify(cart));
+    }
+  }
+
+  // On add-to-cart for guests, update localStorage
+  // (Assume add-to-cart button calls addToCart(item) for guests)
+  window.addToCart = function (item) {
+    if (!isLoggedIn()) {
+      // If item exists, increment quantity
+      let found = false;
+      cart = cart.map((c) => {
+        if (c.id === item.id) {
+          c.quantity += item.quantity;
+          found = true;
+        }
+        return c;
+      });
+      if (!found) cart.push(item);
+      saveCart();
+      renderCart();
+    } else {
+      // For logged-in users, fallback to server-side add (existing logic)
+      window.location.href = `add_to_cart.php?id=${item.id}&qty=${item.quantity}`;
+    }
+  };
 
   function calculateTotals() {
     let subtotal = 0;
@@ -125,12 +155,18 @@ function openCheckout() {
 }
 
 function placeOrder() {
+  if (!isLoggedIn()) {
+    // Redirect guests to login page
+    window.location.href = "login.php?redirect=cart.php";
+    return;
+  }
+  // ...existing code for placing order (for logged-in users)...
   alert("✅ Order Placed Successfully!");
   localStorage.removeItem("cart");
   window.location.href = "index.php";
 }
 
-function closeModal(id) {
-  document.getElementById(id).style.display = "none";
-  document.body.style.overflow = "auto";
-}
+// --- Expose guest cart for login merge ---
+window.getGuestCart = function () {
+  return localStorage.getItem("cart") || "[]";
+};
